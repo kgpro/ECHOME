@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Signup</title>
+    <link rel="stylesheet" href='{% static 'signup.css' %}'>
+</head>
+<body>
+    <a href='{% url 'homepage' %}' class="home-link" target="_blank">Home</a>
+    <div class="container">
+        <h2>User Signup</h2>
+        <form id="signupForm" action="#" method="post">
+            <div class="form-group">
+                <input type="email" id="email" name="email" placeholder="Email" required>
+                <div id="emailError" class="error"></div>
+            </div>
+            
+            <div class="form-group">
+                <input type="password" id="password" name="password" placeholder="Password" required>
+            </div>
+            
+            <div class="form-group">
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
+                <div id="passwordError" class="error"></div>
+            </div>
+            
+            <div class="phone-section">
+                <label>Phone Number (optional):</label>
+                <div class="phone-fields">
+                    <input type="text" id="countryCode" name="countryCode" placeholder="+91" maxlength="4" pattern="\+?\d{1,3}" style="width: 80px;">
+                    <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="Phone Number" pattern="\d*" maxlength="10">
+                </div>
+            </div>
+            
+            <button type="button" id="sendOtpBtn" class="btn-otp">Send OTP</button>
+            
+            <div class="otp-section" id="otpSection">
+                <div class="form-group">
+                    <input type="text" id="otp" name="otp" placeholder="Enter 6-digit OTP" required maxlength="6" pattern="\d{6}">
+                    <div id="otpError" class="error"></div>
+                </div>
+                <input type="submit" id="submitBtn" class="btn-submit" value="Complete Signup">
+            </div>
+        </form>
+        <p class="login-redirect">Already registered? <a href="#" target="_blank">Login</a></p>
+    </div>
+    <footer>
+        <p>&copy; 2024 Your Creativity Share App. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const signupForm = document.getElementById('signupForm');
+            const sendOtpBtn = document.getElementById('sendOtpBtn');
+            const otpSection = document.getElementById('otpSection');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirm_password');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+            const otpError = document.getElementById('otpError');
+            
+            // Validate form before sending OTP
+            sendOtpBtn.addEventListener('click', function() {
+                if (validateForm()) {
+                    // Simulate OTP sending (in real app, this would call your backend)
+                    emailError.textContent = '';
+                    passwordError.textContent = '';
+                    
+                    // Disable the email field after OTP is sent
+                    emailInput.readOnly = true;
+                    
+                    // Show OTP section
+                    otpSection.style.display = 'block';
+                    sendOtpBtn.textContent = 'Resend OTP';
+                    sendOtpBtn.classList.add('resend-otp');
+                    
+                    // In a real app, you would call your backend to send OTP here
+                    console.log('OTP sent to', emailInput.value);
+                    alert(`OTP has been sent to ${emailInput.value} (simulated)`);
+                }
+            });
+            
+            // Final form submission after OTP verification
+            signupForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const otp = document.getElementById('otp').value;
+                
+                // Simple OTP validation (in real app, verify with backend)
+                if (otp.length !== 6 || !/^\d+$/.test(otp)) {
+                    otpError.textContent = 'Please enter a valid 6-digit OTP';
+                    return;
+                }
+                
+                otpError.textContent = '';
+                
+                // Form is valid, proceed with submission
+                alert('Form submitted successfully!');
+                console.log('Form data:', {
+                    email: emailInput.value,
+                    password: passwordInput.value,
+                    countryCode: document.getElementById('countryCode').value,
+                    phoneNumber: document.getElementById('phoneNumber').value
+                });
+                
+                // In a real app, you would submit to your backend here
+                // signupForm.submit();
+            });
+            
+            function validateForm() {
+                let isValid = true;
+                
+                // Email validation
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value)) {
+                    emailError.textContent = 'Please enter a valid email address';
+                    isValid = false;
+                } else {
+                    emailError.textContent = '';
+                }
+                
+                // Password validation
+                if (passwordInput.value.length < 8) {
+                    passwordError.textContent = 'Password must be at least 8 characters';
+                    isValid = false;
+                } else if (passwordInput.value !== confirmPasswordInput.value) {
+                    passwordError.textContent = 'Passwords do not match';
+                    isValid = false;
+                } else {
+                    passwordError.textContent = '';
+                }
+                
+                // Phone validation (optional)
+                const countryCode = document.getElementById('countryCode').value;
+                const phoneNumber = document.getElementById('phoneNumber').value;
+                
+                if ((countryCode || phoneNumber) && !(countryCode && phoneNumber)) {
+                    alert('Please provide both country code and phone number, or leave both blank');
+                    isValid = false;
+                }
+                
+                if (phoneNumber && !/^\d{10}$/.test(phoneNumber)) {
+                    alert('Please enter a valid 10-digit phone number');
+                    isValid = false;
+                }
+                
+                return isValid;
+            }
+        });
+    </script>
+</body>
+</html>

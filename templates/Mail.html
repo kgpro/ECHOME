@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Decrypted File</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      margin: 0;
+      padding: 20px;
+      color: #2f3640;
+      line-height: 1.6;
+    }
+    .container {
+      width: 90%;
+      max-width: 650px;
+      margin: 30px auto;
+      background-color: #ffffff;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+    .container:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, #44bd32 0%, #40739e 100%);
+    }
+    h2 {
+      color: #2f3640;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 28px;
+      font-weight: 700;
+      position: relative;
+      padding-bottom: 15px;
+    }
+    h2:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, #44bd32 0%, #40739e 100%);
+      border-radius: 2px;
+    }
+    .icon {
+      font-size: 24px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    .section {
+      margin-bottom: 30px;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #40739e;
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e6e9ed;
+    }
+    .info-box {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-left: 4px solid #44bd32;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .feature-card {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 18px;
+      text-align: center;
+      transition: all 0.3s ease;
+      border: 1px solid #e6e9ed;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      border-color: #40739e;
+    }
+    .feature-icon {
+      font-size: 24px;
+      margin-bottom: 10px;
+      display: block;
+    }
+    .feature-title {
+      font-weight: 600;
+      color: #2f3640;
+      margin-bottom: 8px;
+    }
+    .feature-desc {
+      font-size: 14px;
+      color: #718093;
+    }
+    .highlight {
+      color: #273c75;
+      font-weight: 600;
+    }
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #e6e9ed;
+      text-align: center;
+      font-size: 0.9em;
+      color: #718093;
+    }
+    .cta {
+      display: inline-block;
+      background: linear-gradient(90deg, #44bd32 0%, #40739e 100%);
+      color: #ffffff !important;
+      padding: 12px 28px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(64, 115, 158, 0.3);
+    }
+    .cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(64, 115, 158, 0.4);
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .logo-text {
+      font-size: 24px;
+      font-weight: 700;
+      color: #40739e;
+      letter-spacing: 1px;
+    }
+    .security-badge {
+      display: inline-block;
+      background: #e6f7e9;
+      color: #44bd32;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <div class="logo-text">ECHOUS</div>
+    </div>
+    
+    <h2><span class="icon">🔓</span> Your Decrypted File is Ready!</h2>
+
+    <div class="section">
+      <p>Dear Recipient,</p>
+      <p>Your decrypted file has been successfully processed and is now available for download. All security protocols have been verified.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">File Details</div>
+      <div class="info-box">
+        <div><span class="icon">📎</span> <span class="highlight">File name:</span> {{ file_name }}</div>
+        <div><span class="icon">🕒</span> <span class="highlight">Storage time:</span> {{ time }}</div>
+        <div><span class="icon">⏱️</span> <span class="highlight">Message delay:</span> {{ time_difference }}</div>
+        <div class="security-badge">
+          <span class="icon">🔒</span> End-to-End AES-256 Encrypted
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Coming Soon</div>
+      <p>We're continuously improving our platform with exciting new features:</p>
+      
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="feature-icon">🚀</span>
+          <div class="feature-title">MAINNET</div>
+          <div class="feature-desc">Migrating to mainnet soon</div>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">💬</span>
+          <div class="feature-title">WhatsApp Integration</div>
+          <div class="feature-desc">Receive files directly via WhatsApp</div>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🅾</span>
+          <div class="feature-title">Instagram DM</div>
+          <div class="feature-desc">Secure file delivery via Instagram</div>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🔑</span>
+          <div class="feature-title">Social Auth</div>
+          <div class="feature-desc">Secure logins via Meta/Google</div>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">𖠌</span>
+          <div class="feature-title">Mobile Apps</div>
+          <div class="feature-desc">Android/iOS applications</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <p>If you have any questions or need assistance, simply reply to this email.</p>
+      
+      <p><strong>Best regards,</strong><br>TEAM ECHOUS</p>
+        
+    </div>
+
+    <div class="footer">
+      <p>&copy; 2025 ECHOUS. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
