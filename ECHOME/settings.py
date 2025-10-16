@@ -93,30 +93,21 @@ WSGI_APPLICATION = 'ECHOME.wsgi.application'
 
 # Database
 
-DATABASE_NAME = os.getenv("DATABASE_NAME")
-DATABASE_USERNAME = os.getenv("DATABASE_USERNAME")
-DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = os.getenv("DB_PORT")
-DB_HOST = DB_HOST if DB_HOST else '127.0.0.1'
+# DATABASE_NAME = os.getenv("DATABASE_NAME")
+# DATABASE_USERNAME = os.getenv("DATABASE_USERNAME")
+# DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
+# DB_HOST = os.getenv("DB_HOST")
+# DB_PORT = os.getenv("DB_PORT")
+# DB_HOST = DB_HOST if DB_HOST else '127.0.0.1'
 
 # print(database_name, database_username, database_password, db_host, db_port)
 
 DATABASES = {
-     'default': {
-        'ENGINE': 'django.db.backends.mysql',  # mysql-connector engine
-        'NAME': DATABASE_NAME,
-        'USER': DATABASE_USERNAME,
-        'PASSWORD': DATABASE_PASSWORD,
-        'HOST': DB_HOST,  # MySQL server IP
-        'PORT': DB_PORT,
-        'OPTIONS': {
-            'autocommit': True,  # Using pure Python implementation
-            'charset': 'utf8mb4',
-        },
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',  # Database file inside project folder
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
