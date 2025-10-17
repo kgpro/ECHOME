@@ -14,23 +14,25 @@ class MyAppConfig(AppConfig):
     name = 'WORKER'
 
     def ready(self):
-        if os.environ.get('RUN_MAIN') == 'true':  # make sure scheduler run in main
-            initialize_scheduler()
-            print("Scheduler initialized")
+        import threading, time
+        from .tasks import send_notification
 
-            if not scheduler.running:  # check if scheduler is running
+        def start_scheduler():
+            time.sleep(10)  # give Django & DB time to start
+            try:
+                initialize_scheduler()
+                if not scheduler.running:
+                    scheduler.add_job(
+                        send_notification,
+                        'interval',
+                        minutes=1,
+                        id='send_notification',
+                        replace_existing=True
+                    )
+                    scheduler.start()
+                    print("✅ Scheduler started successfully")
+            except Exception as e:
+                print(f"Scheduler failed to start: {e}")
 
-                '''
-                all jobs should be added here
-                '''
-                from .tasks import send_notification
-                scheduler.add_job(
-                    send_notification,
-                    'interval',
-                    minutes=1,
-                    id='send_notification',
-                    max_instances=4,
-                    replace_existing=True
-                )
-
-                scheduler.start()
+        if os.environ.get('RUN_MAIN') == 'true':
+            threading.Thread(target=start_scheduler, daemon=True).start()
