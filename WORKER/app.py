@@ -1,31 +1,37 @@
-import os
-from django.apps import AppConfig
-from .scheduler import scheduler, initialize_scheduler
-from ECHOME.BLOCK_CHAIN import ChainContract
-from ECHOME.IPFS import FilebaseIPFS
-from .utility_functions import utility_functions
-
-contract = ChainContract()
-utility_client = utility_functions()
-ipfsClient = FilebaseIPFS()
+from django.db.utils import OperationalError
+from django.core.management import call_command
 
 class MyAppConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'WORKER'
 
     def ready(self):
-        # Prevent multiple scheduler starts when Django autoreloads or Gunicorn forks
-        if os.environ.get('RUN_MAIN') != 'true' and not scheduler.running:
-            initialize_scheduler()
-            print("APScheduler initialized inside Gunicorn process")
+        import threading
+        from .scheduler import scheduler, initialize_scheduler
+        from .tasks import send_notification
 
-            from .tasks import send_notification
-            scheduler.add_job(
-                send_notification,
-                'interval',
-                minutes=1,
-                id='send_notification',
-                max_instances=4,
-                replace_existing=True
-            )
-            scheduler.start()
+        def start_scheduler():
+            from django.db import connections
+            try:
+                # Check if APScheduler tables exist
+                connections['default'].ensure_connection()
+                call_command('migrate', interactive=False)  # optional: run migrations automatically
+                initialize_scheduler()
+                if not scheduler.running:
+                    scheduler.add_job(
+                        send_notification,
+                        'interval',
+                        minutes=1,
+                        id='send_notification',
+                        max_instances=4,
+                        replace_existing=True
+                    )
+                    scheduler.start()
+                    print("✅ Scheduler started after migrations")
+            except OperationalError:
+                # DB not ready yet; retry in 10 seconds
+                print("DB not ready yet. Retrying in 10s...")
+                threading.Timer(10, start_scheduler).start()
+
+        if os.environ.get('RUN_MAIN') == 'true':
+            threading.Thread(target=start_scheduler, daemon=True).start()
