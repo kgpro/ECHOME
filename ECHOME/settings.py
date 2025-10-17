@@ -41,7 +41,7 @@ GMAIL_PASSWORD = os.getenv('GMAIL_PASSWORD')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['echome-rnn6.onrender.com', 'localhost', '127.0.0.1']
 
