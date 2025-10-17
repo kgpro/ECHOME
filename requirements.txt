@@ -1,5 +1,6 @@
 ﻿
 Django
+gunicorn
 django-apscheduler
 web3
 eth-account
@@ -15,4 +16,5 @@ python-magic
 python-dotenv
 python-dateutil
 urllib3
+
 
