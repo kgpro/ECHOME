@@ -1,43 +1,36 @@
 import os
-import threading
 from django.apps import AppConfig
-from django.db.utils import OperationalError
-from django.core.management import call_command
+from .scheduler import scheduler, initialize_scheduler
+from ECHOME.BLOCK_CHAIN import ChainContract
+from ECHOME.IPFS import FilebaseIPFS
+from .utility_functions import utility_functions
+
+contract = ChainContract()  # contract object
+utility_client = utility_functions()
+ipfsClient = FilebaseIPFS()  # filebase object
 
 class MyAppConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'WORKER'
 
     def ready(self):
-        from .scheduler import scheduler, initialize_scheduler
-        from .tasks import send_notification
+        if os.environ.get('RUN_MAIN') == 'true':  # make sure scheduler run in main
+            initialize_scheduler()
+            print("Scheduler initialized")
 
-        def start_scheduler():
-            print("🔹 Scheduler thread starting...")
-            from django.db import connections
-            try:
-                # Ensure DB is ready
-                connections['default'].ensure_connection()
-                call_command('migrate', interactive=False)  # optional
-                initialize_scheduler()
+            if not scheduler.running:  # check if scheduler is running
 
-                if not scheduler.running:
-                    scheduler.add_job(
-                        send_notification,
-                        'interval',
-                        minutes=1,
-                        id='send_notification',
-                        max_instances=4,
-                        replace_existing=True
-                    )
-                    scheduler.start()
-                    print("✅ APScheduler started successfully")
-            except OperationalError:
-                print("DB not ready yet. Retrying in 10s...")
-                threading.Timer(10, start_scheduler).start()
-            except Exception as e:
-                print(f"❌ Scheduler failed: {e}")
+                '''
+                all jobs should be added here
+                '''
+                from .tasks import send_notification
+                scheduler.add_job(
+                    send_notification,
+                    'interval',
+                    minutes=1,
+                    id='send_notification',
+                    max_instances=4,
+                    replace_existing=True
+                )
 
-        # Start scheduler only in main thread (works with Gunicorn)
-        if threading.current_thread().name == "MainThread":
-            threading.Thread(target=start_scheduler, daemon=True).start()
+                scheduler.start()
