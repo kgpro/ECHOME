@@ -1,0 +1,18 @@
+
+<!doctype html>
+{% load static %}
+{% load socialaccount %}
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+<div class="auth-box">
+    <h2>Continue with Google</h2>
+    <form method="post" action="">
+        {% csrf_token %}
+        <button type="submit">Continue</button>
+    </form>
+</div>
+</body>
+</html>
