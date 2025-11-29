@@ -10,6 +10,7 @@ from accounts.decorators import custom_login_required
 from django.shortcuts import render ,redirect , get_object_or_404
 from worker.utility_functions import utility_functions
 from accounts.models import User
+from worker.tasks import do_uploads
 client = utility_functions()
 
 contract = ChainContract()  # Initialize the contract
@@ -32,23 +33,20 @@ def process_secure_upload(request):
         file_bytes = request.FILES.get('encrypted_file').read()
         if not file_bytes:
             raise ValidationError("No file was uploaded")
-        else:
-            '''
-            
-            storing file to ipfs to get cid 
-            
-            '''
+
         # Get form data
+        user=request.custom_user
         unlock_time = int(request.POST.get('unlock_time'))
         email = request.POST.get('email')
         decryption_password = request.POST.get('password')
         ext = request.POST.get('file_ext')
         mime= request.POST.get('file_mime')
-        # print(client.decrypt_aes256_cbc(uploaded_file, decryption_password))
-        if TimeCapsule.total_capsules_by_user(request.user,"pending").count() >= 3:
+
+
+        if TimeCapsule.total_capsules_by_user(user,"pending").count() >= 3:
             raise ValidationError("You have reached the maximum limit of 3 time capsules.")
 
-        cid = ipfs.upload_and_get_cid(file_bytes)  # upload file to IPFS and get CID
+        # cid = ipfs.upload_and_get_cid(file_bytes)  # upload file to IPFS and get CID
 
         if not all([unlock_time, email, decryption_password]):
             raise ValidationError("All fields (unlock_time, email, password) are required")
@@ -59,26 +57,32 @@ def process_secure_upload(request):
         storing cid and to sepoliaetherium  via smart contracts 
          
          '''
-        try:
-            print("storing to blockchain")
-            contract.store_data(cid,unlock_time)
-        except Exception as e:
-            print("failed to store to blockchain")
-            ipfs.delete_file_by_cid(cid)
-            raise ValidationError("Failed to store data on the blockchain") from e
+
+        # try:
+        #     print("storing to blockchain")
+        #     contract.store_data(cid,unlock_time)
+        # except Exception as e:
+        #     print("failed to store to blockchain")
+        #     ipfs.delete_file_by_cid(cid)
+        #     raise ValidationError("Failed to store data on the blockchain") from e
+
+
 
         '''
         storing to mysql database 
 
         '''
-        TimeCapsule.objects.create(
+        capsule=TimeCapsule.objects.create(
+            user=user,
             email=email,
-            cid=cid[-12:],
+            cid="yet to store in blockchain",
             decryption_pass = decryption_password,
             unlock_time = unlock_time,
             file_ext = ext,
             file_mime = mime
         )
+
+        do_uploads.delay(file_bytes,capsule.id)
 
         return JsonResponse("stored successfully", safe=False, status=200)
 

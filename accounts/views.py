@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils import timezone
 from .decorators import custom_login_required
 from django.contrib.auth.hashers import make_password, check_password
-from .models import User, UserSession
+from .models import User, UserSession,faildedLoginAttempt
 from .session import create_session_for_user, revoke_session_by_cookie , parse_cookie_token
 from .signals import user_logged_in, user_logged_out
 from .forms import RegisterForm, LoginForm  # if you have these; else use request.POST
@@ -49,16 +49,26 @@ def login_view(request):
             if not user:
                 form.add_error(None, "Invalid credentials")
                 return render(request, "accounts/login.html", {"form": form})
-            if not user.password_hash or not check_password(password, user.password_hash):
-                form.add_error(None, "Invalid credentials")
-                return render(request, "accounts/login.html", {"form": form})
 
-            # create session row + token
+            # check password
+            if not user.password_hash or not check_password(password, user.password_hash):
+                #  failed attempt
+                user.increment_attempts()
+                faildedLoginAttempt.objects.create(user=user, user_agent=request.META.get("USER_AGENT",''), ip_address=request.META.get('REMOTE_ADDR', ''))
+                form.add_error(None, "Invalid credentials")
+
+                return render(request, "accounts/login.html", {"form": form})
+            # check if frozen
+            if user.is_frozen():
+                form.add_error(None, "Account is temporarily frozen due to multiple failed login attempts. Please try again later.")
+                return render(request, "accounts/login.html", {"form": form})
+            # successful login
+            user.reset_attempts()
             token, us = create_session_for_user(request, user)
             resp = redirect(request.GET.get("next") or "homepage")
             resp.set_cookie(COOKIE_NAME, token, httponly=True, samesite="Lax", max_age=COOKIE_TTL, secure=not settings.DEBUG)
-            print("Set cookie:", COOKIE_NAME, token)
-            print("User logged in:", user)
+            # print("Set cookie:", COOKIE_NAME, token)
+            # print("User logged in:", user)
 
             # fire login signal
             user_logged_in.send(sender=None, user=user, request=request, session=us)

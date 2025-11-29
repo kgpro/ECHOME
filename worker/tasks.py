@@ -2,6 +2,7 @@
 from __future__ import annotations
 import logging
 from .models import ScheduledTaskLog
+from ECHOME.models import TimeCapsule
 from django.utils import timezone
 from ECHOME.SMTP import send_email_with_attachment
 from ECHOME.models import TimeCapsule
@@ -9,7 +10,8 @@ from datetime import timedelta
 from django.utils.timezone import now
 from ECHOME.BLOCK_CHAIN import ChainContract
 from ECHOME.IPFS import FilebaseIPFS
-from .utility_functions import utility_functions
+from .utility_functions import utility_functions\
+
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
@@ -188,3 +190,24 @@ def run_send_notification(self):
         logger.exception("Celery: send_notification failed, will retry")
         # raise to let autoretry_for handle it, or manually retry:
         raise self.retry(exc=exc, countdown=60)
+
+
+@shared_task(serializer="pickle")
+def do_uploads(file_bytes,capsule_id):
+    cid = ipfsClient.upload_and_get_cid(file_bytes)  # upload file to IPFS and get CID
+    capsule = TimeCapsule.objects.get(id=capsule_id)
+    if not cid:
+        capsule.status = "failed"
+        capsule.save()
+        return
+    # update cid in database
+    capsule.cid = cid[-12:]
+    #store cid to blockchain
+    try:
+        contract.store_data(cid, capsule.unlock_time)
+
+    except Exception as e:
+        ipfsClient.delete_file_by_cid(cid)
+        print("failed to store to blockchain :", e)
+        capsule.status = "failed"
+    capsule.save()

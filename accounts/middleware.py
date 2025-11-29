@@ -23,5 +23,5 @@ class CustomAuthMiddleware(MiddlewareMixin):
             return
 
         request.custom_session = session
-        print("Authenticated custom user:", session.user)
+        # print("Authenticated custom user:", session.user)
         request.custom_user = session.user
