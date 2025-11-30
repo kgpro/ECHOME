@@ -2,7 +2,6 @@
 from __future__ import annotations
 import logging
 from .models import ScheduledTaskLog
-from ECHOME.models import TimeCapsule
 from django.utils import timezone
 from ECHOME.SMTP import send_email_with_attachment
 from ECHOME.models import TimeCapsule ,file
@@ -10,7 +9,7 @@ from datetime import timedelta
 from django.utils.timezone import now
 from ECHOME.BLOCK_CHAIN import ChainContract
 from ECHOME.IPFS import FilebaseIPFS
-from .utility_functions import utility_functions\
+from .utility_functions import utility_functions
 
 
 from celery import shared_task
