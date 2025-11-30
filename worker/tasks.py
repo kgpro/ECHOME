@@ -5,7 +5,7 @@ from .models import ScheduledTaskLog
 from ECHOME.models import TimeCapsule
 from django.utils import timezone
 from ECHOME.SMTP import send_email_with_attachment
-from ECHOME.models import TimeCapsule
+from ECHOME.models import TimeCapsule ,file
 from datetime import timedelta
 from django.utils.timezone import now
 from ECHOME.BLOCK_CHAIN import ChainContract
@@ -193,7 +193,8 @@ def run_send_notification(self):
 
 
 @shared_task(serializer="pickle")
-def do_uploads(file_bytes,capsule_id):
+def do_uploads(file_id,capsule_id):
+    file_bytes = file.get_and_delete(file_id)  # get file bytes and delete from db
     cid = ipfsClient.upload_and_get_cid(file_bytes)  # upload file to IPFS and get CID
     capsule = TimeCapsule.objects.get(id=capsule_id)
     if not cid:

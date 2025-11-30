@@ -2,19 +2,19 @@ from datetime import timedelta
 from django.http import JsonResponse
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
-from .models import TimeCapsule
-from .IPFS import FilebaseIPFS
-from .BLOCK_CHAIN import ChainContract
+from .models import TimeCapsule , file
+# from .IPFS import FilebaseIPFS
+# from .BLOCK_CHAIN import ChainContract
 from django.core.exceptions import ValidationError
 from accounts.decorators import custom_login_required
 from django.shortcuts import render ,redirect , get_object_or_404
 from worker.utility_functions import utility_functions
 from accounts.models import User
 from worker.tasks import do_uploads
-client = utility_functions()
-
-contract = ChainContract()  # Initialize the contract
-ipfs = FilebaseIPFS()
+# client = utility_functions()
+#
+# contract = ChainContract()  # Initialize the contract
+# ipfs = FilebaseIPFS()
 
 def homepage(request):
     return render(request, 'index.html')
@@ -81,8 +81,8 @@ def process_secure_upload(request):
             file_ext = ext,
             file_mime = mime
         )
-
-        do_uploads.delay(file_bytes,capsule.id)
+        file_id=file.save(file_bytes)
+        do_uploads.delay(file_id,capsule.id)
 
         return JsonResponse("stored successfully", safe=False, status=200)
 

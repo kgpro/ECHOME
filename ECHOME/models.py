@@ -44,3 +44,26 @@ class TimeCapsule(models.Model):
         else:
             return TimeCapsule.objects.filter(user=user,status=status).values(
                 "id", "email", "file_mime", "status", "unlock_time", "storage_time")
+
+
+
+
+class file(models.Model):
+    file_data = models.BinaryField()
+
+    class Meta:
+        db_table = 'file_storage'
+
+    def save_file(file_bytes):
+        f = file(file_data=file_bytes)
+        f.save()
+        return f.id
+
+    def get_and_delete(file_id):
+        try:
+            f = file.objects.get(id=file_id)
+            file_bytes = f.file_data
+            f.delete()
+            return file_bytes
+        except file.DoesNotExist:
+            return None
