@@ -1,0 +1,76 @@
+# ============================
+# Python
+# ============================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environment
+venv/
+.venv/
+ENV/
+*.env
+.env.*
+
+# ============================
+# Django
+# ============================
+db.sqlite3
+db.sqlite3-journal
+celerybeat-schedule*
+celerybeat-schedule.*
+*.log
+*.pid
+
+# Django static files (collected)
+staticfiles/
+staticroot/
+media/
+*.gz
+
+# Local settings & secrets
+secret.json
+*.pem
+*.key
+*.cer
+
+# ============================
+# IDE / Editors
+# ============================
+
+# PyCharm
+.idea/
+*.iml
+
+# VSCode
+.vscode/
+.code-workspace
+
+# Jupyter
+.ipynb_checkpoints/
+
+# ============================
+# System files
+# ============================
+.DS_Store
+Thumbs.db
+
+# Windows dump files
+*.ps1
+*.bat
+*.cmd
+
+# ============================
+# Build / Packaging
+# ============================
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# ============================
+# Git
+# ============================
+*.orig

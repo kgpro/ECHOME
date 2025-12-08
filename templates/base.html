@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EchoMe - Send Messages to Your Future Self{% endblock %}</title>
+
+    <!-- CSS Files -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="{% url 'homepage' %}" class="logo">
+            <i class="fas fa-hourglass-half"></i> EchoMe
+        </a>
+
+        <!-- Navigation Links -->
+        <ul class="nav-links" id="navLinks">
+            <li><a href="{% url 'homepage' %}#features"><i class="fas fa-star"></i> Features</a></li>
+            <li><a href="{% url 'homepage' %}#steps"><i class="fas fa-play-circle"></i> How It Works</a></li>
+            <li><a href="{% url 'homepage' %}#team"><i class="fas fa-users"></i> Team</a></li>
+            <li><a href="{% url 'homepage' %}#contact"><i class="fas fa-envelope"></i> Contact</a></li>
+
+            <div class="nav-buttons">
+
+                {% if not request.custom_user %}
+                <a href="{% url 'accounts:login' %}" class="btn btn-secondary">Login</a>
+
+                {% else %}
+                <span style="color: #6366F1FF ; margin-left: 2rem; font-size:1rem">
+                    <p><strong>Hello, {{ request.custom_user.username }}</strong></p>
+                 </span>
+
+                <a href="{% url 'accounts:logout' %}" class="btn btn-secondary">Logout</a>
+
+                <a href="{% url 'formpage' %}" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Get Started
+                </a>
+                {% endif %}
+
+</div>
+
+        </ul>
+
+        <!-- Auth Buttons -->
+        <div class="nav-buttons">
+            <a href="{% url 'accounts:signup' %}" class="btn btn-ghost">
+                <i class="fas fa-user-plus"></i> Sign Up
+            </a>
+            <a href="{% url 'formpage' %}" class="btn btn-primary">
+                <i class="fas fa-paper-plane"></i> Get Started
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="logo">
+                    <i class="fas fa-hourglass-half"></i> EchoMe
+                </div>
+                <p>Send messages to your future self. Connect across time.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{% url 'homepage' %}#features">Features</a></li>
+                    <li><a href="{% url 'homepage' %}#steps">How It Works</a></li>
+                    <li><a href="{% url 'homepage' %}#team">Our Team</a></li>
+                    <li><a href="{% url 'homepage' %}#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Account</h4>
+                <ul>
+                    <li><a href="{% url 'accounts:signup' %}">Sign Up</a></li>
+                    <li><a href="{% url 'formpage' %}">Send Message</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 EchoMe. Built with passion by our development team.</p>
+        </div>
+    </div>
+</footer>
+
+<!-- JavaScript Files -->
+<script src="{% static 'js/main.js' %}"></script>
+<script src="{% static 'js/animations.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>
